@@ -1,9 +1,11 @@
-Tässä repossa rakennetaan kulmasohvan sivut uudestan. Tämä avoin projekti on uskovaisten yhteinen projekti jossa sekä kokeneet että opiskelijat saa olla osa kehityksessä. Tovotaan laajentaa kulmasohva uskovaisille ympäri maailmaa ja myös etsitään sinua, joka olet kiinostunut auttamaan tämän projektin kehityksessä.
+Tässä repossa rakennetaan kulmasohvan sivut uudestan. Tämä avoin projekti on uskovaisten yhteinen projekti jossa sekä kokeneet että opiskelijat saa olla osa kehityksessä. Toivotaan laajentaa kulmasohva uskovaisille ympäri maailmaa ja myös etsitään sinua, joka olet kiinostunut auttamaan tämän projektin kehityksessä.
 
 Kulmasohva 3.0 ideoita:
-Asunto/huone vuokraus myös lyhyeksi ajaksi
-Autojen vuokraus/lainaus
-Mökit vuokrattavaksi
+- Asunto/huone vuokraus myös lyhyeksi ajaksi
+- Autojen vuokraus/lainaus
+- Mökit vuokrattavaksi
+- Kielet (EN, FI)
+- Marketointi
 
 Etistään sinua, joka olet kiinostunut:
 - Koodaamaan
@@ -24,9 +26,10 @@ Current features of Kulmasohva 2.0
 - Jobs
 
 Possible Addons for Kulmasohva 3.0
-- Short term leasing for travelers
+- Short term apartments leasing for travelers
 - Renting Cabins
 - Renting cars
+- Language support (EN/FI)
 - More marketing
 
 We are searching for you to join this project if you have or are looking to gain experience in:
