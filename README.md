@@ -40,9 +40,9 @@ We are searching for you to join this project if you have or are looking to gain
 - UI/UXDesign
 
 Stack:
-- Front End: React/Typescript (TBD)
-- Backend: TBD
-- Database: TBD
+- Front End: React/Typescript
+- Backend: node
+- Database: mongodb
 
 # Getting Started with Create React App
 
