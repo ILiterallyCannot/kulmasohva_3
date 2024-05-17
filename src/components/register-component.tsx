@@ -1,8 +1,8 @@
+import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Component } from "react";
-import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-import AuthService from "../services/auth.service";
+import AuthService from "../services/auth-service";
 
 type Props = {};
 
@@ -58,6 +58,8 @@ export default class Register extends Component<Props, State> {
 
   handleRegister(formValue: { username: string; email: string; password: string }) {
     const { username, email, password } = formValue;
+
+    console.log("Clicked!")
 
     this.setState({
       message: "",
