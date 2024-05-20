@@ -5,7 +5,7 @@ export default function authHeader() {
       user = JSON.parse(userStr);
   
     if (user && user.accessToken) {
-      return { Authorization: 'Bearer ' + user.accessToken };
+      return { Authorization: 'Bearer ', 'x-access-token': user.accessToken };
     } else {
       return { Authorization: '' };
     }

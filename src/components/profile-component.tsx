@@ -42,7 +42,7 @@ export default class Profile extends Component<Props, State> {
             <div>
               <header className="">
                 <h3>
-                  <strong>{currentUser.username}</strong> Profile
+                  <strong>Welcome, {currentUser.username}</strong>
                 </h3>
               </header>
               <p>
