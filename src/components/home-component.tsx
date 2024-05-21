@@ -40,6 +40,7 @@ export default class Home extends Component<Props, State> {
       <div className="container">
         <header className="jumbotron">
           <h3>{this.state.content}</h3>
+          <h3>Welcome to Kulmasohva.fi</h3>
         </header>
       </div>
     );

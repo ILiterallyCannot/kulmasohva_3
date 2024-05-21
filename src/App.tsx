@@ -42,7 +42,9 @@ class App extends Component<Props, State> {
     if (user) {
       this.setState({
         currentUser: user,
-        showModeratorBoard: user.roles.includes("ROLE_MODERATOR"),
+        showModeratorBoard: user.roles.includes(
+          "ROLE_MODERATOR" && "ROLE_ADMIN"
+        ),
         showAdminBoard: user.roles.includes("ROLE_ADMIN"),
       });
     }
@@ -69,15 +71,17 @@ class App extends Component<Props, State> {
     return (
       <div>
         <nav className="navbar navbar-expand navbar-dark bg-dark">
-          <Link to={"/"} className="navbar-brand">
+          <Link to={"/home"} className="navbar-brand">
             Kulmasohva 3.0
           </Link>
           <div className="navbar-nav mr-auto">
-            <li className="nav-item">
-              <Link to={"/home"} className="nav-link">
-                Home
-              </Link>
-            </li>
+            {showAdminBoard && (
+              <li className="nav-item">
+                <Link to={"/admin"} className="nav-link">
+                  Admin Board
+                </Link>
+              </li>
+            )}
 
             {showModeratorBoard && (
               <li className="nav-item">
@@ -87,18 +91,10 @@ class App extends Component<Props, State> {
               </li>
             )}
 
-            {showAdminBoard && (
-              <li className="nav-item">
-                <Link to={"/admin"} className="nav-link">
-                  Admin Board
-                </Link>
-              </li>
-            )}
-
             {currentUser && (
               <li className="nav-item">
                 <Link to={"/user"} className="nav-link">
-                  User
+                  Dashboard
                 </Link>
               </li>
             )}
@@ -108,12 +104,12 @@ class App extends Component<Props, State> {
             <div className="navbar-nav ml-auto">
               <li className="nav-item">
                 <Link to={"/profile"} className="nav-link">
-                  {currentUser.username}
+                  {currentUser.username} profile
                 </Link>
               </li>
               <li className="nav-item">
                 <a href="/login" className="nav-link" onClick={this.logOut}>
-                  LogOut
+                  Log out
                 </a>
               </li>
             </div>

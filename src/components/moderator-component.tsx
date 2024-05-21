@@ -18,7 +18,7 @@ export default class BoardModerator extends Component<Props, State> {
   }
 
   componentDidMount() {
-    UserService.getUserBoard().then(
+    UserService.getModeratorBoard().then(
       (response) => {
         this.setState({
           content: response.data,
@@ -41,7 +41,7 @@ export default class BoardModerator extends Component<Props, State> {
     return (
       <div className="container">
         <header className="jumbotron">
-          <h3>{this.state.content}</h3>
+          <h3>Moderator board: {this.state.content}</h3>
         </header>
       </div>
     );

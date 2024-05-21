@@ -41,7 +41,7 @@ export default class BoardUser extends Component<Props, State> {
     return (
       <div className="container">
         <header className="jumbotron">
-          <h3>User Component {this.state.content}</h3>
+          <h3>Dashboard Component: {this.state.content}</h3>
         </header>
       </div>
     );
