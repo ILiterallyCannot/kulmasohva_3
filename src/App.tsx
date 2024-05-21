@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 import AuthService from "./services/auth-service";
-import IUser from './types/user-type';
+import IUser from "./types/user-type";
 
 import Login from "./components/login-component";
 import Register from "./components/register-component";
@@ -19,10 +19,10 @@ import EventBus from "./common/EventBus";
 type Props = {};
 
 type State = {
-  showModeratorBoard: boolean,
-  showAdminBoard: boolean,
-  currentUser: IUser | undefined
-}
+  showModeratorBoard: boolean;
+  showAdminBoard: boolean;
+  currentUser: IUser | undefined;
+};
 
 class App extends Component<Props, State> {
   constructor(props: Props) {
@@ -135,7 +135,7 @@ class App extends Component<Props, State> {
         </nav>
 
         <div className="container mt-3">
-        <Routes>
+          <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />
             <Route path="/login" element={<Login />} />
@@ -147,7 +147,7 @@ class App extends Component<Props, State> {
           </Routes>
         </div>
 
-        { /*<AuthVerify logOut={this.logOut}/> */}
+        {/*<AuthVerify logOut={this.logOut}/> */}
       </div>
     );
   }

@@ -6,14 +6,14 @@ type Props = {};
 
 type State = {
   content: string;
-}
+};
 
 export default class BoardAdmin extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      content: ""
+      content: "",
     };
   }
 
@@ -21,25 +21,25 @@ export default class BoardAdmin extends Component<Props, State> {
     const currentUser = authService.getCurrentUser();
     if (currentUser && currentUser.roles.includes("ROLE_ADMIN")) {
       UserService.getAdminBoard().then(
-        response => {
+        (response) => {
           this.setState({
-            content: response.data
+            content: response.data,
           });
         },
-        error => {
+        (error) => {
           this.setState({
             content:
               (error.response &&
                 error.response.data &&
                 error.response.data.message) ||
               error.message ||
-              error.toString()
+              error.toString(),
           });
         }
       );
     } else {
       this.setState({
-        content: "You do not have access to this page."
+        content: "You do not have access to this page.",
       });
     }
   }
