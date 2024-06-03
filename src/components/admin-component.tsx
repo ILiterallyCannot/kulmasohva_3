@@ -33,7 +33,7 @@ const AdminComponent: React.FC = () => {
         }
       );
       loadAllPosts();
-      loadAllRoles(); // Fetch roles when the component mounts
+      loadAllRoles();
     } else {
       setContent("You do not have access to this page.");
     }
@@ -60,7 +60,11 @@ const AdminComponent: React.FC = () => {
   const loadAllRoles = () => {
     RoleService.getAllRoles().then(
       (response) => {
-        setRoles(response.data);
+        const roles = response.data.map((role: any) => ({
+          id: role._id,
+          name: role.name,
+        }));
+        setRoles(roles);
       },
       (error) => {
         console.error("Error fetching roles:", error);
@@ -88,13 +92,13 @@ const AdminComponent: React.FC = () => {
           id: user._id,
         }));
         setUsers(usersById);
-        if (usersById.length > 0) {
-          setSelectedUser(usersById[0]); // Automatically select the first user
-          setSelectedRole(usersById[0].roles[0] || null); // Automatically select the user's first role
-        } else {
-          setSelectedUser(null);
-          setSelectedRole(null);
-        }
+        //if (usersById.length > 0) {
+        //  setSelectedUser(usersById[0]); // Automatically select the first user
+        //  setSelectedRole(usersById[0].roles[0] || null); // Automatically select the user's first role
+        //} else {
+        //  setSelectedUser(null);
+        //  setSelectedRole(null);
+        //}
       })
       .catch((error) => {
         console.error("Error searching users:", error);

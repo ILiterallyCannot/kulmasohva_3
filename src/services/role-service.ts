@@ -6,7 +6,7 @@ const API_URL = "http://localhost:8080/api/test/";
 
 class RoleService {
   getAllRoles() {
-    return axios.get(API_URL + "roles", { headers: authHeader() });
+    return axios.get(`${API_URL}roles`, { headers: authHeader() });
   };
 
   updateUserRoles(id: string, newRoles: IRole[]): Promise<void> {
