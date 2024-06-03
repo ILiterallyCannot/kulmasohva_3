@@ -12,7 +12,7 @@ import Home from "./components/home-component";
 import Profile from "./components/profile-component";
 import BoardUser from "./components/user-component";
 import BoardModerator from "./components/moderator-component";
-import BoardAdmin from "./components/admin-component";
+import AdminComponent from "./components/admin-component";
 
 import EventBus from "./common/EventBus";
 
@@ -139,7 +139,7 @@ class App extends Component<Props, State> {
             <Route path="/profile" element={<Profile />} />
             <Route path="/user" element={<BoardUser />} />
             <Route path="/mod" element={<BoardModerator />} />
-            <Route path="/admin" element={<BoardAdmin />} />
+            <Route path="/admin" element={<AdminComponent />} />
           </Routes>
         </div>
 

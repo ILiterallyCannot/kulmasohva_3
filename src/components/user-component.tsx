@@ -134,7 +134,7 @@ export default class BoardUser extends Component<Props, State> {
           <button onClick={this.handlePostSubmit}>Submit</button>
         </div>
         <div>
-        <PostComponent canDelete={true} posts={this.state.posts} onDelete={this.handleDelete} />
+        <PostComponent canDelete={false} posts={this.state.posts} onDelete={this.handleDelete} />
         </div>
       </div>
     );
