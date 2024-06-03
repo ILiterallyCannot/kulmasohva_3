@@ -1,7 +1,7 @@
 import axios from "axios";
 import authHeader from "./auth-header";
 import { PostContent } from "../types/post-type";
-import IUser, { IRole } from '../types/user-type';
+import IUser from '../types/user-type';
 const API_URL = "http://localhost:8080/api/test/";
 
 class UserService {
@@ -40,10 +40,6 @@ class UserService {
   searchUsers(username: string): Promise<{ data: IUser[] }> {
     return axios.get(`${API_URL}users/`, { params: { username }, headers: authHeader() });
 }
-
-  updateUserRoles(id: string, newRoles: IRole[]): Promise<void> {
-    return axios.put(`${API_URL}users/${id}/roles`, { roles: newRoles }, { headers: authHeader() });
-  }
 }
 
 export default new UserService();

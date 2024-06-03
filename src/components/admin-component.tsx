@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import authService from "../services/auth-service";
 import UserService from "../services/user-service";
+import RoleService from "../services/role-service";
 import PostComponent from "./post-component";
 import { PostContent } from "../types/post-type";
 import IUser, { IRole } from "../types/user-type";
@@ -10,6 +11,9 @@ const AdminComponent: React.FC = () => {
   const [searchCriteria, setSearchCriteria] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [posts, setPosts] = useState<PostContent[]>([]);
+  const [roles, setRoles] = useState<IRole[]>([]);
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const [selectedRole, setSelectedRole] = useState<IRole | null>(null);
 
   useEffect(() => {
     const currentUser = authService.getCurrentUser();
@@ -29,6 +33,7 @@ const AdminComponent: React.FC = () => {
         }
       );
       loadAllPosts();
+      loadAllRoles(); // Fetch roles when the component mounts
     } else {
       setContent("You do not have access to this page.");
     }
@@ -52,6 +57,17 @@ const AdminComponent: React.FC = () => {
     );
   };
 
+  const loadAllRoles = () => {
+    RoleService.getAllRoles().then(
+      (response) => {
+        setRoles(response.data);
+      },
+      (error) => {
+        console.error("Error fetching roles:", error);
+      }
+    );
+  };
+
   const handleDelete = (postId: string) => {
     UserService.deletePost(postId).then(
       () => {
@@ -64,31 +80,38 @@ const AdminComponent: React.FC = () => {
     );
   };
 
-  const handleSearch = (criteria: string) => {
-    UserService.searchUsers(criteria)
+  const handleSearch = () => {
+    UserService.searchUsers(searchCriteria)
       .then((response) => {
         const usersById = response.data.map((user: any) => ({
           ...user,
           id: user._id,
-          username: user.username
         }));
         setUsers(usersById);
+        if (usersById.length > 0) {
+          setSelectedUser(usersById[0]); // Automatically select the first user
+          setSelectedRole(usersById[0].roles[0] || null); // Automatically select the user's first role
+        } else {
+          setSelectedUser(null);
+          setSelectedRole(null);
+        }
       })
       .catch((error) => {
         console.error("Error searching users:", error);
       });
   };
 
-  const handleRoleUpdate = (userId: string, newRoles: IRole[]) => {
-    const roleIds = newRoles.map(role => role.id) as IRole[];
-    UserService.updateUserRoles(userId, roleIds)
-      .then(() => {
-        console.log("Roles updated successfully.");
-        handleSearch(searchCriteria);
-      })
-      .catch((error) => {
-        console.error("Error updating users:", error);
-      });
+  const handleRoleUpdate = () => {
+    if (selectedUser && selectedRole) {
+      RoleService.updateUserRoles(selectedUser.id, [selectedRole])
+        .then(() => {
+          console.log("Roles updated successfully.");
+          handleSearch(); // Refresh the user list
+        })
+        .catch((error) => {
+          console.error("Error updating roles:", error);
+        });
+    }
   };
 
   return (
@@ -97,32 +120,46 @@ const AdminComponent: React.FC = () => {
         <h3>Admin Component: {content}</h3>
       </header>
       <h2>User Dashboard</h2>
-      <PostComponent
-        canDelete={true}
-        posts={posts}
-        onDelete={handleDelete}
-      />
+      <PostComponent canDelete={true} posts={posts} onDelete={handleDelete} />
       <h3>Users and roles</h3>
       <input
-      type="text"
-      value={searchCriteria}
-      onChange={(e) => setSearchCriteria(e.target.value)}
-      placeholder="Search users..."
+        type="text"
+        value={searchCriteria}
+        onChange={(e) => setSearchCriteria(e.target.value)}
+        placeholder="Search users..."
       />
-      <button onClick={() => handleSearch(searchCriteria)}>Search</button>
+      <button onClick={handleSearch}>Search</button>
       <ul>
-        {users.map(user => (
-          <li key={user.id}>
+        {users.map((user) => (
+          <li key={user.id} onClick={() => setSelectedUser(user)}>
             <p>username: {user.username}</p>
             <p>userID: {user.id}</p>
             <p>email: {user.email}</p>
-            <p>Roles: {user.roles?.join(', ')}</p>
-            <button onClick={() => handleRoleUpdate(user.id ?? '', [{ id: '6654583a3095bace9e96ec01'}])}>
-              Update Roles
-            </button>
+            <p>Role: {user.roles}</p> {/* assuming roles is an array of role IDs */}
           </li>
         ))}
       </ul>
+      {selectedUser && (
+        <div>
+          <h3>User: {selectedUser.username}</h3>
+          <select
+            value=""
+            onChange={(e) => {
+              const selectedRoleId = e.target.value;
+              const role = roles.find((role) => role.id === selectedRoleId);
+              setSelectedRole(role || null);
+            }}
+          >
+            <option value="">Select a role</option>
+            {roles.map((role) => (
+              <option key={role.id} value="">
+                {role.name}
+              </option>
+            ))}
+          </select>
+          <button onClick={handleRoleUpdate}>Update Role</button>
+        </div>
+      )}
     </div>
   );
 };
