@@ -12,7 +12,7 @@ const AdminComponent: React.FC = () => {
   const [content, setContent] = useState<string>("");
   const [posts, setPosts] = useState<PostContent[]>([]);
   const [roles, setRoles] = useState<IRole[]>([]);
-  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const [selectedUser, setSelectedUser] = useState<string>("");
   const [selectedRole, setSelectedRole] = useState<IRole | null>(null);
 
   useEffect(() => {
@@ -92,13 +92,13 @@ const AdminComponent: React.FC = () => {
           id: user._id,
         }));
         setUsers(usersById);
-        //if (usersById.length > 0) {
-        //  setSelectedUser(usersById[0]); // Automatically select the first user
-        //  setSelectedRole(usersById[0].roles[0] || null); // Automatically select the user's first role
-        //} else {
-        //  setSelectedUser(null);
-        //  setSelectedRole(null);
-        //}
+        if (usersById.length > 0 ) {
+          setSelectedUser(usersById[0].id);
+          setSelectedRole(usersById[0].roles[0]);
+        } else {
+          setSelectedUser("");
+          setSelectedRole(usersById[0].roles[0]);
+        }
       })
       .catch((error) => {
         console.error("Error searching users:", error);
@@ -106,8 +106,8 @@ const AdminComponent: React.FC = () => {
   };
 
   const handleRoleUpdate = () => {
-    if (selectedUser && selectedRole) {
-      RoleService.updateUserRoles(selectedUser.id, [selectedRole])
+    if (selectedUser && selectedRole && selectedRole.id) {
+      RoleService.updateUserRoles(selectedUser, [selectedRole])
         .then(() => {
           console.log("Roles updated successfully.");
           handleSearch(); // Refresh the user list
@@ -135,28 +135,28 @@ const AdminComponent: React.FC = () => {
       <button onClick={handleSearch}>Search</button>
       <ul>
         {users.map((user) => (
-          <li key={user.id} onClick={() => setSelectedUser(user)}>
+          <li key={user.id} onClick={() => setSelectedUser(user.id)} className={selectedUser === user.id ? "selected" : ""}>
             <p>username: {user.username}</p>
             <p>userID: {user.id}</p>
             <p>email: {user.email}</p>
-            <p>Role: {user.roles}</p> {/* assuming roles is an array of role IDs */}
+            <p>Role: {user.roles}</p>
           </li>
         ))}
       </ul>
       {selectedUser && (
         <div>
-          <h3>User: {selectedUser.username}</h3>
+          <h3>User: {selectedUser}</h3>
           <select
-            value=""
+            value={selectedRole?.id || ""}
             onChange={(e) => {
               const selectedRoleId = e.target.value;
               const role = roles.find((role) => role.id === selectedRoleId);
-              setSelectedRole(role || null);
+              setSelectedRole(role ? role : null);
             }}
           >
-            <option value="">Select a role</option>
+            <option value="">Select Role</option>
             {roles.map((role) => (
-              <option key={role.id} value="">
+              <option key={role.id} value={role?.id || ""}>
                 {role.name}
               </option>
             ))}

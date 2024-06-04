@@ -7,6 +7,6 @@ export default interface IUser {
 }
 
 export interface IRole {
-  id?: string | null;
+  id: string | null;
   name?: string | null;
 }
