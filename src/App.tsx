@@ -9,7 +9,7 @@ import IUser from "./types/user-type";
 import Login from "./components/login-component";
 import Register from "./components/register-component";
 import Home from "./components/home-component";
-import Profile from "./components/profile-component";
+import ProfileComponent from "./components/profile-component";
 import BoardUser from "./components/user-component";
 import BoardModerator from "./components/moderator-component";
 import AdminComponent from "./components/admin-component";
@@ -136,7 +136,7 @@ class App extends Component<Props, State> {
             <Route path="/home" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<ProfileComponent />} />
             <Route path="/user" element={<BoardUser />} />
             <Route path="/mod" element={<BoardModerator />} />
             <Route path="/admin" element={<AdminComponent />} />

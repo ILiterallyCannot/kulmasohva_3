@@ -3,6 +3,11 @@ export default interface IUser {
   username?: string | null;
   email?: string;
   password?: string;
+  name?: String;
+  surname?: String;
+  phonenumber?: string;
+  city?: String;
+  country?: String;
   roles?: Array<string>;
 }
 
