@@ -1,7 +1,7 @@
 import axios from "axios";
 import authHeader from "./auth-header";
 import { PostContent } from "../types/post-type";
-import IUser from '../types/user-type';
+import IUser from "../types/user-type";
 const API_URL = "http://localhost:8080/api/test/";
 
 class UserService {
@@ -28,9 +28,19 @@ class UserService {
   getAllPosts() {
     return axios.get(`${API_URL}posts/`, { headers: authHeader() });
   }
-  
+
   createPost(postContent: PostContent) {
-    return axios.post(`${API_URL}posts/`, postContent, { headers: authHeader() });
+    return axios.post(`${API_URL}posts/`, postContent, {
+      headers: authHeader(),
+    });
+  }
+
+  updateProfile(userId: string, profileContent: IUser) {
+    return axios.put(`${API_URL}users/${userId}`, profileContent, { headers: authHeader() });
+  }
+
+  getUserInfo(userId: string) {
+    return axios.get(`${API_URL}users/${userId}`, { headers: authHeader() });
   }
 
   deletePost(postId: string) {
@@ -38,8 +48,15 @@ class UserService {
   }
 
   searchUsers(username: string): Promise<{ data: IUser[] }> {
-    return axios.get(`${API_URL}users/`, { params: { username }, headers: authHeader() });
-}
+    return axios.get(`${API_URL}users/`, {
+      params: { username },
+      headers: authHeader(),
+    });
+  }
+
+  deleteUsers(userId: string) {
+    return axios.delete(`${API_URL}users/${userId}`, { headers: authHeader() });
+  }
 }
 
 export default new UserService();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import authService from "../services/auth-service";
+import AuthService from "../services/auth-service";
 import UserService from "../services/user-service";
 import RoleService from "../services/role-service";
 import PostComponent from "./post-component";
@@ -16,7 +16,7 @@ const AdminComponent: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<IRole | null>(null);
 
   useEffect(() => {
-    const currentUser = authService.getCurrentUser();
+    const currentUser = AuthService.getCurrentUser();
     if (currentUser && currentUser.roles.includes("ROLE_ADMIN")) {
       UserService.getAdminBoard().then(
         (response) => {
@@ -92,12 +92,14 @@ const AdminComponent: React.FC = () => {
           id: user._id,
         }));
         setUsers(usersById);
-        if (usersById.length > 0 ) {
+        if (usersById.length > 0) {
           setSelectedUser(usersById[0].id);
-          setSelectedRole(usersById[0].roles[0]);
+          if (usersById[0].roles) {
+            setSelectedRole(usersById[0].roles[0]);
+          }
         } else {
           setSelectedUser("");
-          setSelectedRole(usersById[0].roles[0]);
+          setSelectedRole(null);
         }
       })
       .catch((error) => {
@@ -118,6 +120,21 @@ const AdminComponent: React.FC = () => {
     }
   };
 
+  const handleUserDelete = (userId: string) => {
+    if (window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
+      UserService.deleteUsers(userId)
+        .then(() => {
+          console.log("User deleted successfully");
+          handleSearch(); 
+        })
+        .catch((error) => {
+          console.error("Error deleting user:", error);
+        });
+    } else {
+      console.log("User deletion cancelled."); 
+    }
+  }
+
   return (
     <div className="container">
       <header className="jumbotron">
@@ -135,17 +152,23 @@ const AdminComponent: React.FC = () => {
       <button onClick={handleSearch}>Search</button>
       <ul>
         {users.map((user) => (
-          <li key={user.id} onClick={() => setSelectedUser(user.id)} className={selectedUser === user.id ? "selected" : ""}>
+          <div key={user.id}>
+          <li onClick={() => setSelectedUser(user.id)} className={selectedUser === user.id ? "selected" : ""}>
             <p>username: {user.username}</p>
             <p>userID: {user.id}</p>
             <p>email: {user.email}</p>
-            <p>Role: {user.roles}</p>
+            {user.roles &&
+                user.roles.map((roleId: string, index: number) => {
+                  const role = roles.find((r) => r.id === roleId);
+                  return <p key={index}>Role: {role ? role.name : roleId}</p>;
+                })}
           </li>
+          <button onClick={() => handleUserDelete(user.id)}>Delete User</button>
+          </div>
         ))}
       </ul>
       {selectedUser && (
         <div>
-          <h3>User: {selectedUser}</h3>
           <select
             value={selectedRole?.id || ""}
             onChange={(e) => {
@@ -154,14 +177,14 @@ const AdminComponent: React.FC = () => {
               setSelectedRole(role ? role : null);
             }}
           >
-            <option value="">Select Role</option>
+            <option value="">User Privilages</option>
             {roles.map((role) => (
               <option key={role.id} value={role?.id || ""}>
                 {role.name}
               </option>
             ))}
           </select>
-          <button onClick={handleRoleUpdate}>Update Role</button>
+          <button onClick={handleRoleUpdate}>Update Privilages</button>
         </div>
       )}
     </div>
