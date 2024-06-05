@@ -24,17 +24,22 @@ export default class PostComponent extends Component<Props> {
         </header>
         <ul>
           {posts.map((post) => (
-            <li key={post.id}>
-              <p>{new Date(post.date).toLocaleString()}</p>
-              <p>Id: {post.id}</p>
+            <div key={post.id}>
+              <p>
+                {new Intl.DateTimeFormat("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                }).format(new Date(post.date))}
+              </p>
               <h3>{post.title}</h3>
               <p>{post.content}</p>
               {canDelete && (
-                <button onClick={() => onDelete(post.id)}>
-                  Delete
-                </button>
+                <button onClick={() => onDelete(post.id)}>Delete</button>
               )}
-            </li>
+            </div>
           ))}
         </ul>
       </div>
