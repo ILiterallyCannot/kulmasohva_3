@@ -47,21 +47,23 @@ const ProfileComponent: React.FC = () => {
   const getUserInformation = async (user: IUser & { accessToken: string }) => {
     try {
       const currentUser = AuthService.getCurrentUser();
-      if (!user || !user.id) {
+      if (user && user.id) {
+        UserService.getUserInfo(currentUser.id).then((response) => {
+          const userInfo = response.data;
+          setCurrentUser({
+            ...currentUser,
+            name: userInfo.name,
+            surname: userInfo.surname,
+            phonenumber: userInfo.phonenumber,
+            city: userInfo.city,
+            country: userInfo.country,
+          });
+        });
+      } else {
         console.error("User not logged in or missing ID");
+        setContent("You do not have access to this page!");
         return;
       }
-      UserService.getUserInfo(currentUser.id).then((response) => {
-        const userInfo = response.data;
-        setCurrentUser({
-          ...currentUser,
-          name: userInfo.name,
-          surname: userInfo.surname,
-          phonenumber: userInfo.phonenumber,
-          city: userInfo.city,
-          country: userInfo.country,
-        });
-      });
     } catch (error) {
       console.error("Error fetching profile:", error);
     }
@@ -98,7 +100,7 @@ const ProfileComponent: React.FC = () => {
 
   return (
     <div className="container">
-      {userReady && (
+      {userReady ? (
         <div>
           <header className="">
             <h3>
@@ -164,6 +166,8 @@ const ProfileComponent: React.FC = () => {
             <button type="submit">Save Details</button>
           </form>
         </div>
+      ) : (
+        <h2>Loading...</h2>
       )}
     </div>
   );
