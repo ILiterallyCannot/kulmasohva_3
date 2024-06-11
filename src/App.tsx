@@ -138,8 +138,8 @@ class App extends Component<Props, State> {
               <Route path="/register" element={<Register />} />
               <Route path="/profile" element={<ProfileComponent />} />
               <Route path="/user/*" element={<BoardUser />} />
-              <Route path="/mod" element={<BoardModerator />} />
-              <Route path="/admin" element={<AdminComponent />} />
+              <Route path="/mod/*" element={<BoardModerator />} />
+              <Route path="/admin/*" element={<AdminComponent />} />
             </Routes>
           </div>
 

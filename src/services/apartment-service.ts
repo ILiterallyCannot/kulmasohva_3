@@ -13,6 +13,10 @@ class ApartmentService {
     listApartment(apartmentContent: IApartment) {
         return axios.post(`${API_URL}apartments/`, apartmentContent, { headers: authHeader() });
     }
+
+    deleteApartment(apartmentId : string) {
+        return axios.delete(`${API_URL}apartments/${apartmentId}/`, { headers: authHeader() });
+    }
 }
 
 export default new ApartmentService();

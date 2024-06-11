@@ -1,14 +1,19 @@
 import { Component } from "react";
+import { Routes, Route, Link} from "react-router-dom";
+import ApartmentComponent from "./apartment-component";
 import UserService from "../services/user-service";
 import authService from "../services/auth-service";
 import PostComponent from './post-component';
 import { PostContent } from "../types/post-type";
+import IApartment from "../types/apartment-type";
+import ApartmentService from "../services/apartment-service";
 
 type Props = {};
 
 type State = {
   content: string;
   posts: PostContent[];
+  apartments: IApartment[];
 };
 
 export default class BoardModerator extends Component<Props, State> {
@@ -18,10 +23,11 @@ export default class BoardModerator extends Component<Props, State> {
     this.state = {
       content: "",
       posts: [],
+      apartments: [],
     };
   }
 
-  handleDelete = (postId: string) => {
+  handlePostDelete = (postId: string) => {
     UserService.deletePost(postId).then(() => {
       const updatedPosts = this.state.posts.filter((post) => post.id !== postId);
       this.setState({ posts: updatedPosts });
@@ -29,6 +35,21 @@ export default class BoardModerator extends Component<Props, State> {
     (error) => {
       console.error(error);
     });
+  };
+
+  handleApartmentDelete = (apartment: IApartment) => {
+    ApartmentService.deleteApartment(apartment.id).then(
+      () => {
+        const updatedApartments = this.state.apartments.filter(
+          (apartment) => apartment.id !== apartment.id
+        );
+        this.setState({ apartments: updatedApartments });
+        this.loadApartments();
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   };
 
   componentDidMount() {
@@ -52,6 +73,7 @@ export default class BoardModerator extends Component<Props, State> {
         }
       );
       this.loadAllPosts();
+      this.loadApartments();
     } else {
       this.setState({
         content: "You do not have access to this page.",
@@ -77,14 +99,61 @@ export default class BoardModerator extends Component<Props, State> {
     );
   }
 
+  loadApartments = () => {
+    ApartmentService.getAllApartments().then(
+      (response) => {
+        this.setState({apartments: response.data});
+      },
+      (error) => {
+        console.error('Error fetching apartments:', error);
+      }
+    );
+  };
+
   render() {
     return (
       <div className="container">
+        <nav className="navbar navbar-expand navbar-dark bg-dark">
+          <div className="navbar-nav ml-auto">
+            <li className="nav-item">
+              <Link to={"/mod/posts"} className="nav-link">
+                Posts
+              </Link>
+              <Link to={"/mod/apartments"} className="nav-link">
+                Apartments
+              </Link>
+            </li>
+          </div>
+        </nav>
         <header className="jumbotron">
           <h3>Moderator board: {this.state.content}</h3>
         </header>
         <h2>User Dashboard</h2>
-        <PostComponent canDelete={true} posts={this.state.posts} onDelete={this.handleDelete} />
+        <div>
+          <Routes>
+            <Route path="apartments" element={<ApartmentComponent canDelete={true} onDelete={this.handleApartmentDelete} loadApartments={this.loadApartments} apartments={this.state.apartments} />} />
+            <Route
+              path="posts"
+              element={
+                <PostComponent
+                  canDelete={true}
+                  posts={this.state.posts}
+                  onDelete={this.handlePostDelete}
+                />
+              }
+            />
+            <Route
+              path="/"
+              element={
+                <PostComponent
+                  canDelete={true}
+                  posts={this.state.posts}
+                  onDelete={this.handlePostDelete}
+                />
+              }
+            />
+          </Routes>
+        </div>
       </div>
     );
   }

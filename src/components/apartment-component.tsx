@@ -1,9 +1,8 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
-import IApartment from "../types/apartment-type";
+import React, { useState, useEffect, ChangeEvent} from "react";
+import IApartment, {ApartmentComponentProps} from "../types/apartment-type";
 import ApartmentService from "../services/apartment-service";
 
-const ApartmentComponent: React.FC = () => {
-  const [apartments, setApartments] = useState<IApartment[]>([]);
+const ApartmentComponent: React.FC<ApartmentComponentProps> = ({canDelete, onDelete, loadApartments, apartments}) => {
   const [formData, setFormData] = useState({
     price: "",
     description: "",
@@ -15,7 +14,8 @@ const ApartmentComponent: React.FC = () => {
 
   useEffect(() => {
     loadApartments();
-  }, []);
+  }, [loadApartments]);
+
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,17 +39,6 @@ const ApartmentComponent: React.FC = () => {
     } catch (error) {
       console.error("Error updating profile:", error);
     }
-  };
-
-  const loadApartments = () => {
-    ApartmentService.getAllApartments().then(
-      (response) => {
-        setApartments(response.data);
-      },
-      (error) => {
-        console.error('Error fetching apartments:', error);
-      }
-    );
   };
 
   return (
@@ -112,6 +101,9 @@ const ApartmentComponent: React.FC = () => {
             <p>{apartment.country}</p>
             <p>{apartment.price}</p>
             <p>{apartment.description}</p>
+            {canDelete && (
+                <button onClick={() => onDelete(apartment)}>Delete</button>
+              )}
           </li>
         ))}
       </ul>

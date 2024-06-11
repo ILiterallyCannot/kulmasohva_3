@@ -3,14 +3,17 @@ import { Routes, Route, Link } from "react-router-dom";
 import UserService from "../services/user-service";
 import AuthService from "../services/auth-service";
 import { PostContent } from "../types/post-type";
+import IApartment from "../types/apartment-type";
 import PostComponent from "./post-component";
 import ApartmentComponent from "./apartment-component";
+import ApartmentService from "../services/apartment-service";
 
 type Props = {};
 
 type State = {
   content: string;
   posts: PostContent[];
+  apartments: IApartment[];
   postTitle: string;
   postContent: string;
 };
@@ -22,6 +25,7 @@ export default class BoardUser extends Component<Props, State> {
     this.state = {
       content: "",
       posts: [],
+      apartments:[],
       postTitle: "",
       postContent: "",
     };
@@ -46,6 +50,7 @@ export default class BoardUser extends Component<Props, State> {
       }
     );
     this.loadAllPosts();
+    this.loadApartments();
   }
 
   loadAllPosts() {
@@ -66,13 +71,40 @@ export default class BoardUser extends Component<Props, State> {
     );
   }
 
-  handleDelete = (postId: string) => {
+  loadApartments = () => {
+    ApartmentService.getAllApartments().then(
+      (response) => {
+        this.setState({apartments: response.data});
+        console.log({apartments: response.data});
+        console.log(response.data);
+      },
+      (error) => {
+        console.error('Error fetching apartments:', error);
+      }
+    );
+  };
+
+  handlePostDelete = (postId: string) => {
     UserService.deletePost(postId).then(
       () => {
         const updatedPosts = this.state.posts.filter(
           (post) => post.id !== postId
         );
         this.setState({ posts: updatedPosts });
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  };
+
+  handleApartmentDelete = (apartment: IApartment) => {
+    ApartmentService.deleteApartment(apartment.id).then(
+      () => {
+        const updatedApartments = this.state.apartments.filter(
+          (apartment) => apartment.id !== apartment.id
+        );
+        this.setState({ apartments: updatedApartments });
       },
       (error) => {
         console.error(error);
@@ -154,14 +186,14 @@ export default class BoardUser extends Component<Props, State> {
         </div>
         <div>
           <Routes>
-            <Route path="apartments" element={<ApartmentComponent />} />
+            <Route path="apartments" element={<ApartmentComponent canDelete={true} onDelete={this.handleApartmentDelete} loadApartments={this.loadApartments} apartments={this.state.apartments} />} />
             <Route
               path="posts"
               element={
                 <PostComponent
                   canDelete={false}
                   posts={this.state.posts}
-                  onDelete={this.handleDelete}
+                  onDelete={this.handlePostDelete}
                 />
               }
             />
@@ -171,7 +203,7 @@ export default class BoardUser extends Component<Props, State> {
                 <PostComponent
                   canDelete={false}
                   posts={this.state.posts}
-                  onDelete={this.handleDelete}
+                  onDelete={this.handlePostDelete}
                 />
               }
             />

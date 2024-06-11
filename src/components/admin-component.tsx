@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Routes, Route, Link } from "react-router-dom";
 import AuthService from "../services/auth-service";
 import UserService from "../services/user-service";
 import RoleService from "../services/role-service";
 import PostComponent from "./post-component";
 import { PostContent } from "../types/post-type";
+import IApartment from "../types/apartment-type";
+import ApartmentComponent from "./apartment-component";
+import ApartmentService from "../services/apartment-service";
 import IUser, { IRole } from "../types/user-type";
 
 const AdminComponent: React.FC = () => {
@@ -14,6 +18,26 @@ const AdminComponent: React.FC = () => {
   const [roles, setRoles] = useState<IRole[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>("");
   const [selectedRole, setSelectedRole] = useState<IRole | null>(null);
+  const [apartments, setApartments] = useState<IApartment[]>([]);
+
+  const loadApartments = useCallback(() => {
+    ApartmentService.getAllApartments()
+      .then((response) => {
+        const apartments = response.data.map((apartment: any) => ({
+          id: apartment._id,
+          address: apartment.address,
+          city: apartment.city,
+          country: apartment.country,
+          size: apartment.size,
+          description: apartment.description,
+          price: apartment.price,
+        }));
+        setApartments(apartments);
+      })
+      .catch((error) => {
+        console.error('Error fetching apartments:', error);
+      });
+  }, []);
 
   useEffect(() => {
     const currentUser = AuthService.getCurrentUser();
@@ -33,11 +57,12 @@ const AdminComponent: React.FC = () => {
         }
       );
       loadAllPosts();
+      loadApartments();
       loadAllRoles();
     } else {
       setContent("You do not have access to this page.");
     }
-  }, []);
+  }, [loadApartments]);
 
   const loadAllPosts = () => {
     UserService.getAllPosts().then(
@@ -72,11 +97,30 @@ const AdminComponent: React.FC = () => {
     );
   };
 
-  const handleDelete = (postId: string) => {
+  const handlePostDelete = (postId: string) => {
     UserService.deletePost(postId).then(
       () => {
-        const updatedPosts = posts.filter((post) => post.id !== postId);
+        const updatedPosts = posts.filter(
+          (post) => post.id !== postId
+        );
         setPosts(updatedPosts);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  };
+
+  const handleApartmentDelete = (apartment: IApartment) => {
+    console.log("Attempting delete of", apartment.id)
+    ApartmentService.deleteApartment(apartment.id).then(
+      () => {
+        const updatedApartments = apartments.filter(
+          (currentApartment) => currentApartment.id !== apartment.id
+        );
+        console.log("Deleted apartment!");
+        setApartments(updatedApartments);
+        loadApartments();
       },
       (error) => {
         console.error(error);
@@ -121,27 +165,77 @@ const AdminComponent: React.FC = () => {
   };
 
   const handleUserDelete = (userId: string) => {
-    if (window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this user? This action cannot be undone."
+      )
+    ) {
       UserService.deleteUsers(userId)
         .then(() => {
           console.log("User deleted successfully");
-          handleSearch(); 
+          handleSearch();
         })
         .catch((error) => {
           console.error("Error deleting user:", error);
         });
     } else {
-      console.log("User deletion cancelled."); 
+      console.log("User deletion cancelled.");
     }
-  }
+  };
 
   return (
     <div className="container">
+      <nav className="navbar navbar-expand navbar-dark bg-dark">
+        <div className="navbar-nav ml-auto">
+          <li className="nav-item">
+            <Link to={"/admin/posts"} className="nav-link">
+              Posts
+            </Link>
+            <Link to={"/admin/apartments"} className="nav-link">
+              Apartments
+            </Link>
+          </li>
+        </div>
+      </nav>
       <header className="jumbotron">
         <h3>Admin Component: {content}</h3>
       </header>
       <h2>User Dashboard</h2>
-      <PostComponent canDelete={true} posts={posts} onDelete={handleDelete} />
+      <div>
+        <Routes>
+        <Route
+            path="apartments"
+            element={
+              <ApartmentComponent
+                canDelete={true}
+                onDelete={handleApartmentDelete}
+                loadApartments={loadApartments}
+                apartments={apartments}
+              />
+            }
+          />
+          <Route
+            path="posts"
+            element={
+              <PostComponent
+                canDelete={true}
+                posts={posts}
+                onDelete={handlePostDelete}
+              />
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <PostComponent
+                canDelete={true}
+                posts={posts}
+                onDelete={handlePostDelete}
+              />
+            }
+          />
+        </Routes>
+      </div>
       <h3>Users and roles</h3>
       <input
         type="text"
@@ -153,17 +247,22 @@ const AdminComponent: React.FC = () => {
       <ul>
         {users.map((user) => (
           <div key={user.id}>
-          <li onClick={() => setSelectedUser(user.id)} className={selectedUser === user.id ? "selected" : ""}>
-            <p>username: {user.username}</p>
-            <p>userID: {user.id}</p>
-            <p>email: {user.email}</p>
-            {user.roles &&
+            <li
+              onClick={() => setSelectedUser(user.id)}
+              className={selectedUser === user.id ? "selected" : ""}
+            >
+              <p>username: {user.username}</p>
+              <p>userID: {user.id}</p>
+              <p>email: {user.email}</p>
+              {user.roles &&
                 user.roles.map((roleId: string, index: number) => {
                   const role = roles.find((r) => r.id === roleId);
                   return <p key={index}>Role: {role ? role.name : roleId}</p>;
                 })}
-          </li>
-          <button onClick={() => handleUserDelete(user.id)}>Delete User</button>
+            </li>
+            <button onClick={() => handleUserDelete(user.id)}>
+              Delete User
+            </button>
           </div>
         ))}
       </ul>
