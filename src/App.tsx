@@ -130,18 +130,18 @@ class App extends Component<Props, State> {
           )}
         </nav>
 
-        <div className="container mt-3">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<ProfileComponent />} />
-            <Route path="/user" element={<BoardUser />} />
-            <Route path="/mod" element={<BoardModerator />} />
-            <Route path="/admin" element={<AdminComponent />} />
-          </Routes>
-        </div>
+          <div className="container mt-3">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/profile" element={<ProfileComponent />} />
+              <Route path="/user/*" element={<BoardUser />} />
+              <Route path="/mod" element={<BoardModerator />} />
+              <Route path="/admin" element={<AdminComponent />} />
+            </Routes>
+          </div>
 
         {/*<AuthVerify logOut={this.logOut}/> */}
       </div>
