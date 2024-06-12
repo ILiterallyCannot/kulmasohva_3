@@ -5,3 +5,9 @@ export interface PostContent {
     date: string;
     userId: string;
 }
+
+export interface PostComponentProps {
+    canDelete: boolean;
+    onDelete: (posts: PostContent[]) => void;
+    posts: PostContent[];
+  }

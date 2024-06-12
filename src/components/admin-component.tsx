@@ -97,22 +97,12 @@ const AdminComponent: React.FC = () => {
     );
   };
 
-  const handlePostDelete = (postId: string) => {
-    UserService.deletePost(postId).then(
-      () => {
-        const updatedPosts = posts.filter(
-          (post) => post.id !== postId
-        );
-        setPosts(updatedPosts);
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-  };
+  const handlePostDelete = (updatedPosts: PostContent[]) => {
+    setPosts(updatedPosts);
+  }
 
   const handleApartmentDelete = (apartment: IApartment) => {
-    console.log("Attempting delete of", apartment.id)
+    console.log("Attempting delete of", apartment.id);
     ApartmentService.deleteApartment(apartment.id).then(
       () => {
         const updatedApartments = apartments.filter(

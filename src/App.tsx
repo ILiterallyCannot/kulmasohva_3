@@ -10,8 +10,8 @@ import Login from "./components/login-component";
 import Register from "./components/register-component";
 import Home from "./components/home-component";
 import ProfileComponent from "./components/profile-component";
-import BoardUser from "./components/user-component";
-import BoardModerator from "./components/moderator-component";
+import UserComponent from "./components/user-component";
+import ModeratorComponent from "./components/moderator-component";
 import AdminComponent from "./components/admin-component";
 
 import EventBus from "./common/EventBus";
@@ -137,8 +137,8 @@ class App extends Component<Props, State> {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/profile" element={<ProfileComponent />} />
-              <Route path="/user/*" element={<BoardUser />} />
-              <Route path="/mod/*" element={<BoardModerator />} />
+              <Route path="/user/*" element={<UserComponent />} />
+              <Route path="/mod/*" element={<ModeratorComponent />} />
               <Route path="/admin/*" element={<AdminComponent />} />
             </Routes>
           </div>

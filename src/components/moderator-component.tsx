@@ -1,4 +1,4 @@
-import { Component } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Routes, Route, Link} from "react-router-dom";
 import ApartmentComponent from "./apartment-component";
 import UserService from "../services/user-service";
@@ -8,80 +8,60 @@ import { PostContent } from "../types/post-type";
 import IApartment from "../types/apartment-type";
 import ApartmentService from "../services/apartment-service";
 
-type Props = {};
+const ModeratorComponent: React.FC = () => {
+  const [content, setContent] = useState<string>("");
+  const [posts, setPosts] = useState<PostContent[]>([]);
+  const [apartments, setApartments] = useState<IApartment[]>([]);
 
-type State = {
-  content: string;
-  posts: PostContent[];
-  apartments: IApartment[];
-};
+  const loadApartments = useCallback(() => {
+    console.log("loading apartments");
+    ApartmentService.getAllApartments()
+      .then((response) => {
+        const apartments = response.data.map((apartment: any) => ({
+          id: apartment._id,
+          address: apartment.address,
+          city: apartment.city,
+          country: apartment.country,
+          size: apartment.size,
+          description: apartment.description,
+          price: apartment.price,
+        }));
+        setApartments(apartments);
+      })
+      .catch((error) => {
+        console.error('Error fetching apartments:', error);
+      });
+  }, []);
 
-export default class BoardModerator extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      content: "",
-      posts: [],
-      apartments: [],
-    };
-  }
-
-  handlePostDelete = (postId: string) => {
-    UserService.deletePost(postId).then(() => {
-      const updatedPosts = this.state.posts.filter((post) => post.id !== postId);
-      this.setState({ posts: updatedPosts });
-    },
-    (error) => {
-      console.error(error);
-    });
-  };
-
-  handleApartmentDelete = (apartment: IApartment) => {
-    ApartmentService.deleteApartment(apartment.id).then(
-      () => {
-        const updatedApartments = this.state.apartments.filter(
-          (apartment) => apartment.id !== apartment.id
-        );
-        this.setState({ apartments: updatedApartments });
-        this.loadApartments();
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-  };
-
-  componentDidMount() {
+  useEffect(() => {
     const currentUser = authService.getCurrentUser();
     if (currentUser && currentUser.roles.includes("ROLE_ADMIN" || "ROLE_MODERATOR")) {
       UserService.getModeratorBoard().then(
         (response) => {
-          this.setState({
-            content: response.data,
-          });
+          setContent(
+            response.data,
+          );
         },
         (error) => {
-          this.setState({
-            content:
+          setContent(
               (error.response &&
                 error.response.data &&
                 error.response.data.message) ||
               error.message ||
               error.toString(),
-          });
+          );
         }
       );
-      this.loadAllPosts();
-      this.loadApartments();
+      loadAllPosts();
+      loadApartments();
     } else {
-      this.setState({
-        content: "You do not have access to this page.",
-      });
+      setContent(
+        "You do not have access to this page.",
+      );
     }
-  }
+  }, [loadApartments])
 
-  loadAllPosts() {
+  const loadAllPosts = () => {
     UserService.getAllPosts().then(
       (response) => {
         const posts = response.data.map((post: any) => ({
@@ -91,7 +71,7 @@ export default class BoardModerator extends Component<Props, State> {
           date: post.date,
           userId: post.userId,
         }));
-        this.setState({ posts });
+        setPosts(posts);
       },
       (error) => {
         console.error(error);
@@ -99,18 +79,27 @@ export default class BoardModerator extends Component<Props, State> {
     );
   }
 
-  loadApartments = () => {
-    ApartmentService.getAllApartments().then(
-      (response) => {
-        this.setState({apartments: response.data});
+  const handlePostDelete = (updatedPosts: PostContent[]) => {
+    setPosts(updatedPosts);
+  }
+
+  const handleApartmentDelete = (apartment: IApartment) => {
+    console.log("Attempting delete of", apartment.id)
+    ApartmentService.deleteApartment(apartment.id).then(
+      () => {
+        const updatedApartments = apartments.filter(
+          (currentApartment) => currentApartment.id !== apartment.id
+        );
+        console.log("Deleted apartment!");
+        setApartments(updatedApartments);
+        loadApartments();
       },
       (error) => {
-        console.error('Error fetching apartments:', error);
+        console.error(error);
       }
     );
   };
 
-  render() {
     return (
       <div className="container">
         <nav className="navbar navbar-expand navbar-dark bg-dark">
@@ -126,19 +115,19 @@ export default class BoardModerator extends Component<Props, State> {
           </div>
         </nav>
         <header className="jumbotron">
-          <h3>Moderator board: {this.state.content}</h3>
+          <h3>Moderator board: {content}</h3>
         </header>
         <h2>User Dashboard</h2>
         <div>
           <Routes>
-            <Route path="apartments" element={<ApartmentComponent canDelete={true} onDelete={this.handleApartmentDelete} loadApartments={this.loadApartments} apartments={this.state.apartments} />} />
+            <Route path="apartments" element={<ApartmentComponent canDelete={true} onDelete={handleApartmentDelete} loadApartments={loadApartments} apartments={apartments} />} />
             <Route
               path="posts"
               element={
                 <PostComponent
                   canDelete={true}
-                  posts={this.state.posts}
-                  onDelete={this.handlePostDelete}
+                  posts={posts}
+                  onDelete={handlePostDelete}
                 />
               }
             />
@@ -147,8 +136,8 @@ export default class BoardModerator extends Component<Props, State> {
               element={
                 <PostComponent
                   canDelete={true}
-                  posts={this.state.posts}
-                  onDelete={this.handlePostDelete}
+                  posts={posts}
+                  onDelete={handlePostDelete}
                 />
               }
             />
@@ -156,5 +145,6 @@ export default class BoardModerator extends Component<Props, State> {
         </div>
       </div>
     );
-  }
 }
+
+export default ModeratorComponent;
