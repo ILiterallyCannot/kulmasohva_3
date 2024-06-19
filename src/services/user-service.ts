@@ -1,8 +1,8 @@
 import axios from "axios";
-import authHeader from "./auth-header";
 import { PostContent } from "../types/post-type";
 import IUser from "../types/user-type";
-const API_URL = "http://localhost:8080/api/test/";
+import authHeader from "./auth-header";
+const API_URL = "http://localhost:8080/api/v1/";
 
 class UserService {
   getPublicContent() {
@@ -36,7 +36,9 @@ class UserService {
   }
 
   updateProfile(userId: string, profileContent: IUser) {
-    return axios.put(`${API_URL}users/${userId}`, profileContent, { headers: authHeader() });
+    return axios.put(`${API_URL}users/${userId}`, profileContent, {
+      headers: authHeader(),
+    });
   }
 
   getUserInfo(userId: string) {
